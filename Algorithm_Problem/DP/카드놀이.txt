@@ -44,7 +44,7 @@ int N;
  
 int main()
 {
-    int flag = 0, max_num;
+    int max_num;
     //freopen("input.in", "r", stdin);
     scanf("%d", &N);
     for (int i = 1; i <= N; i++) 
@@ -52,7 +52,7 @@ int main()
     
     DP[1] = score[1];
     DP[2] = score[1] + score[2];
-    flag = 2;
+    
     for (int i = 3; i <= N; i++) {
         max_num = max(DP[i - 2] + score[i], DP[i - 3] + score[i - 1] + score[i]);
         DP[i] = max(DP[i - 1], max_num);
