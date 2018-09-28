@@ -1,0 +1,110 @@
+문제
+SCC (Strongly Connected Component)란, 방향성 그래프가 주어질 때 정점을 여러 집합으로 나누는 기법으로써, 
+같은 집합에 속해있는 정점끼리는 서로 왔다갔다 할 수 있어야 한다. 그래프가 주어질 때, SCC를 구하였을 때 얻을 수 있는 
+정점의 집합의 개수를 구하는 프로그램을 작성하시오.
+
+
+
+입력
+첫째 줄에 정점의 개수 N과 간선의 개수 M이 주어진다. ( 1 ≤ N ≤ 1,000, 1 ≤ M ≤ 100,000 ) 둘째 줄부터 간선의 정보가 주어진다. 
+각 줄은 두 개의 숫자 a, b로 이루어져 있으며, 이는 정점 a에서 정점 b로 향하는 간선이 존재한다는 의미이다.
+
+ 
+ 
+출력
+주어진 그래프에서 SCC를 구하였을 때, 얻을 수 있는 정점의 집합의 개수를 출력한다.
+
+
+예제 입력
+8 14
+1 5
+2 1
+2 3
+2 6
+3 4
+3 8
+4 3
+4 8
+5 2
+5 6
+6 7
+7 3
+7 6
+8 4
+
+
+예제 출력
+3
+
+
+
+소스코드
+#include <cstdio>
+#include <vector>
+#include <stack>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX = 10010;
+
+int V, E, cnt, visited[MAX], SCCtotal, sn[MAX];
+vector<int> myGraph[MAX];
+bool finished[MAX];
+stack<int> myStack;
+vector < vector<int> > SCC;
+
+
+int DFS(int curr)
+{
+	visited[curr] = ++cnt;		// 4) 방문한 순서대로 번호를 부여한다.
+	myStack.push(curr);			// 5) 방문한 순서대로 스택에 쌓는다.
+
+	int result = visited[curr];
+
+	for (int i = 0; i<myGraph[curr].size(); i++)	// 6) 해당 노드에 모든 간선을 도는 반복문
+	{
+		int next = myGraph[curr][i];
+
+		if (visited[next] == 0)						// 7) 다음 노드를 방문한적이 없다면
+			result = min(result, DFS(next));		// 다음노드를 DFS돌린값과 자신의 번호를 비교하여 result에 대입
+		else if (!finished[next])					// 8) 다음 노드를 방문한적이 있지만 SCC가 결정되지 않은 것이라면
+			result = min(result, visited[next]);	// 다음노드와 현재 노드의 번호를 비교하여 result 값에 대입
+	}
+
+	if (result == visited[curr])		// 9) 만약 해당 노드의 번호와 방문했던 순서가 같다면 SCC가 하나 생긴거다.
+	{
+
+		while (1)
+		{
+			int t = myStack.top();
+			myStack.pop();				// 10) myStack에서 자기 자신의 노드번호가 나올때까지 pop() 시킨다.
+			finished[t] = true;
+
+			if (t == curr)
+				break;
+		}
+
+		SCCtotal++;			// 11) SCC의 총 개수
+	}
+
+	return result;
+}
+
+int main() {
+	freopen("input.in", "r", stdin);
+	scanf("%d %d", &V, &E);
+	for (int i = 0; i< E; i++) {	// 1) 그래프 정보 입력
+		int from, to;
+		scanf("%d %d", &from, &to);
+		myGraph[from].push_back(to);
+	}
+
+	for (int i = 1; i <= V; i++)	// 2) 모든 노드를 다 방문해보아야 되기 때문에 반복문을 돌려서 DFS진행
+		if (visited[i] == 0)
+			DFS(i);
+
+	printf("%d\n", SCCtotal);
+
+
+}
