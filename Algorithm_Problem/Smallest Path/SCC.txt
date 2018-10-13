@@ -38,7 +38,81 @@ SCC (Strongly Connected Component)란, 방향성 그래프가 주어질 때 정�
 
 
 
-소스코드
+1)소스코드 - 코사라주 알고리즘
+#include<cstdio>
+#include<vector>
+#include<stack>
+ 
+ 
+using namespace std;
+ 
+vector <vector <int> > rmyGraph;
+vector <vector <int> > lmyGraph;
+stack <int> myStack;
+stack <int> finished;
+int visited[1001];
+ 
+int N, M, a, b, cnt;
+ 
+void rDFS(int st) {
+    visited[st] = 1;
+    myStack.push(st);
+    for (int i = 0; i < rmyGraph[st].size(); i++) {
+        if (visited[rmyGraph[st][i]] == 0) {
+            visited[rmyGraph[st][i]] = 1;
+            rDFS(rmyGraph[st][i]);
+        }
+    }
+    finished.push(myStack.top());
+    myStack.pop();
+}
+ 
+void lDFS(int st) {
+    visited[st] = 1;
+    myStack.push(st);
+    for (int i = 0; i < lmyGraph[st].size(); i++) {
+        if (visited[lmyGraph[st][i]] == 0) {
+            visited[lmyGraph[st][i]] = 1;
+            lDFS(lmyGraph[st][i]);
+        }
+    }
+    myStack.pop();
+}
+ 
+int main()
+{
+    //freopen("input.in", "r", stdin);
+ 
+    scanf("%d%d", &N, &M);
+ 
+    rmyGraph.resize(N + 1);
+    lmyGraph.resize(N + 1);
+ 
+    for (int i = 0; i < M; i++) {
+        scanf("%d%d", &a, &b);
+        rmyGraph[a].push_back(b);
+        lmyGraph[b].push_back(a);
+    }
+    for (int i = 1; i <= N; i++) {
+        if (visited[i] == 0)
+            rDFS(i);
+    }
+    for (int i = 0; i <= N; i++)
+        visited[i] = 0;
+ 
+    while (!finished.empty()) {
+        lDFS(finished.top());
+        cnt++;
+        while (!finished.empty() && visited[finished.top()] == 1) {
+            finished.pop();
+        }
+    }
+    printf("%d", cnt);
+}
+
+
+
+2) 소스코드 - 타잔 알고리즘
 #include <cstdio>
 #include <vector>
 #include <stack>
